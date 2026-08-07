@@ -7,11 +7,11 @@ class ProductProvider extends ChangeNotifier {
   final GumroadService _service = GumroadService();
   final Box _box = Hive.box('products');
   List<Product> _products = [];
+  List<Product> _filteredProducts = [];
   bool _isLoading = false;
-List<Product> get products => _products;
-List<Product> _filteredProducts = [];
-List<Product> get filteredProducts => _filteredProducts;
-bool _isLoading = false;
+
+  List<Product> get products => _products;
+  List<Product> get filteredProducts => _filteredProducts;
 
 bool get isLoading => _isLoading;
 
@@ -60,7 +60,21 @@ Future<void> fetchProducts() async {
 
   Future<void> deleteProduct(String productId) async {
     _products.removeWhere((p) => p.id == productId);
+    _filteredProducts.removeWhere((p) => p.id == productId);
     await _box.put('list', _products.map((p) => p.toJson()).toList());
     notifyListeners();
+  }
+
+  Future<void> updateProduct(Product updatedProduct) async {
+    final index = _products.indexWhere((p) => p.id == updatedProduct.id);
+    if (index != -1) {
+      _products[index] = updatedProduct;
+      final filteredIndex = _filteredProducts.indexWhere((p) => p.id == updatedProduct.id);
+      if (filteredIndex != -1) {
+        _filteredProducts[filteredIndex] = updatedProduct;
+      }
+      await _box.put('list', _products.map((p) => p.toJson()).toList());
+      notifyListeners();
+    }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/product.dart';
+import '../providers/product_provider.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
@@ -62,7 +64,12 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // TODO: Call Provider to update product
+                    final updatedProduct = widget.product.copyWith(
+                      name: _nameController.text,
+                      price: double.parse(_priceController.text),
+                      description: _descController.text,
+                    );
+                    context.read<ProductProvider>().updateProduct(updatedProduct);
                     Navigator.pop(context);
                   }
                 },

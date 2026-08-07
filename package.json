@@ -1,0 +1,30 @@
+{
+  "name": "gumroad-creator-hub",
+  "version": "1.0.0",
+  "description": "A professional companion app for Gumroad creators with admin control panel and local hosting support",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --host 0.0.0.0 --port 3000",
+    "serve": "python3 -m http.server 8080",
+    "termux": "python3 -m http.server 8080 --bind 0.0.0.0"
+  },
+  "keywords": [
+    "gumroad",
+    "creator",
+    "admin",
+    "dashboard",
+    "termux",
+    "local-hosting"
+  ],
+  "author": "Manus AI",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
