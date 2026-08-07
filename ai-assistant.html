@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gumroad Creator Hub - AI Assistant</title>
+  <style>
+    :root {
+      --primary: #ff90e8;
+      --secondary: #4a90e2;
+      --bg: #f4f4f0;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --border: #000000;
+      --light-gray: #ecf0f1;
+      --success: #27ae60;
+      --warning: #f39c12;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse 2s infinite;
+    }
+    .status-indicator.online {
+      background-color: var(--success);
+    }
+    .status-indicator.offline {
+      background-color: #e74c3c;
+      animation: none;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .status-text {
+      font-size: 14px;
+      color: #666;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      box-shadow: 4px 4px 0px var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    button {
+      background-color: var(--primary);
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--text);
+      margin-top: 10px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .ai-tools {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .tool-btn {
+      padding: 15px;
+      text-align: center;
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .tool-btn:hover {
+      background: var(--primary);
+      transform: translateY(-2px);
+    }
+    .tool-btn.active {
+      background: var(--primary);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .output-box {
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+      min-height: 100px;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--light-gray);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+    .alert.success {
+      background: #d4edda;
+      border-color: var(--success);
+      color: #155724;
+    }
+    .alert.error {
+      background: #f8d7da;
+      border-color: #e74c3c;
+      color: #721c24;
+    }
+    .alert.info {
+      background: #d1ecf1;
+      border-color: var(--secondary);
+      color: #0c5460;
+    }
+    .alert.warning {
+      background: #fff3cd;
+      border-color: var(--warning);
+      color: #856404;
+    }
+    .copy-btn {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 10px 15px;
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-bottom: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 6px 6px 0 0;
+    }
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .ai-tools {
+        grid-template-columns: 1fr;
+      }
+      .header h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 Gumroad AI Assistant</h1>
+      <p>
+        <span class="status-indicator" id="statusIndicator"></span>
+        <span class="status-text" id="statusText">Checking Llama AI service...</span>
+      </p>
+      <p style="font-size: 12px; color: #666; margin: 10px 0 0 0;">
+        Powered by TinyLlama (1.1B) - Lightweight, runs locally on your device
+      </p>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="product-tools">📦 Product Tools</div>
+      <div class="tab" data-tab="content-tools">✍️ Content Tools</div>
+      <div class="tab" data-tab="analysis-tools">📊 Analysis Tools</div>
+      <div class="tab" data-tab="settings">⚙️ Settings</div>
+    </div>
+
+    <!-- Product Tools Tab -->
+    <div id="product-tools" class="tab-content active">
+      <div class="card">
+        <h2>Product Description Generator</h2>
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="productName" placeholder="e.g., Digital Marketing Course">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" id="productCategory" placeholder="e.g., Education, Software, Art">
+        </div>
+        <button id="generateDescBtn" onclick="generateProductDescription()">Generate Description</button>
+        <div id="descriptionOutput" class="output-box" style="display: none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>Product Title Generator</h2>
+        <div class="form-group">
+          <label>Product Description</label>
+          <textarea id="titleInput" placeholder="Paste your product description here..."></textarea>
+        </div>
+        <button id="generateTitlesBtn" onclick="generateProductTitles()">Generate Titles</button>
+        <div id="titlesOutput" class="output-box" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Content Tools Tab -->
+    <div id="content-tools" class="tab-content">
+      <div class="card">
+        <h2>Text Enhancer</h2>
+        <p>Improve clarity and engagement of your writing</p>
+        <div class="form-group">
+          <label>Your Text</label>
+          <textarea id="enhanceInput" placeholder="Paste your text here..."></textarea>
+        </div>
+        <button id="enhanceBtn" onclick="enhanceText()">Enhance Text</button>
+        <div id="enhanceOutput" class="output-box" style="display: none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>Writing Suggestions</h2>
+        <p>Get AI suggestions to improve your writing</p>
+        <div class="form-group">
+          <label>Your Text</label>
+          <textarea id="suggestionInput" placeholder="Paste your text here..."></textarea>
+        </div>
+        <button id="suggestionBtn" onclick="getWritingSuggestion()">Get Suggestion</button>
+        <div id="suggestionOutput" class="output-box" style="display: none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>FAQ Answer Generator</h2>
+        <div class="form-group">
+          <label>Question</label>
+          <input type="text" id="faqQuestion" placeholder="e.g., How do I get a refund?">
+        </div>
+        <div class="form-group">
+          <label>Context (Optional)</label>
+          <textarea id="faqContext" placeholder="Add any relevant context about your product..."></textarea>
+        </div>
+        <button id="faqBtn" onclick="generateFAQAnswer()">Generate Answer</button>
+        <div id="faqOutput" class="output-box" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Analysis Tools Tab -->
+    <div id="analysis-tools" class="tab-content">
+      <div class="card">
+        <h2>Sentiment Analysis</h2>
+        <p>Analyze customer feedback sentiment</p>
+        <div class="form-group">
+          <label>Customer Feedback</label>
+          <textarea id="sentimentInput" placeholder="Paste customer feedback here..."></textarea>
+        </div>
+        <button id="sentimentBtn" onclick="analyzeSentiment()">Analyze Sentiment</button>
+        <div id="sentimentOutput" class="output-box" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="settings" class="tab-content">
+      <div class="card">
+        <h2>Llama AI Settings</h2>
+        <div class="form-group">
+          <label>Ollama API URL</label>
+          <input type="text" id="apiUrl" placeholder="http://localhost:11434/api" value="http://localhost:11434/api">
+        </div>
+        <div class="form-group">
+          <label>Model</label>
+          <input type="text" id="modelName" placeholder="tinyllama" value="tinyllama">
+        </div>
+        <div class="form-group">
+          <label>Temperature (0-1)</label>
+          <input type="number" id="temperature" min="0" max="1" step="0.1" value="0.7">
+          <small>Lower = more focused, Higher = more creative</small>
+        </div>
+        <div class="form-group">
+          <label>Max Tokens (Response Length)</label>
+          <input type="number" id="maxTokens" min="50" max="512" step="50" value="256">
+          <small>Lower = faster responses, Lower phone usage</small>
+        </div>
+        <button onclick="saveSettings()">Save Settings</button>
+      </div>
+
+      <div class="card">
+        <h2>Installation Guide</h2>
+        <h3>For Desktop/Laptop:</h3>
+        <ol>
+          <li>Install Ollama: <a href="https://ollama.ai" target="_blank">https://ollama.ai</a></li>
+          <li>Run: <code>ollama pull tinyllama</code></li>
+          <li>Start: <code>ollama serve</code></li>
+        </ol>
+        
+        <h3>For Termux (Android Phone):</h3>
+        <ol>
+          <li>Install Ollama in Termux: <code>pkg install ollama</code></li>
+          <li>Pull model: <code>ollama pull tinyllama</code></li>
+          <li>Start: <code>ollama serve --host 0.0.0.0</code></li>
+          <li>Access from browser: <code>http://localhost:11434</code></li>
+        </ol>
+
+        <h3>Model Information:</h3>
+        <p><strong>TinyLlama (1.1B)</strong> - Optimized for phones and low-resource devices</p>
+        <ul>
+          <li>Size: ~600MB</li>
+          <li>Memory: ~2GB RAM required</li>
+          <li>Speed: Fast inference on mobile</li>
+          <li>Quality: Good for product descriptions, suggestions, basic analysis</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="llama-ai.js"></script>
+  <script>
+    let llama = null;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLlama();
+      setupTabNavigation();
+    });
+
+    function initializeLlama() {
+      const apiUrl = localStorage.getItem('llamaApiUrl') || 'http://localhost:11434/api';
+      const model = localStorage.getItem('llamaModel') || 'tinyllama';
+      
+      llama = new LlamaAI({ apiUrl, model });
+      updateStatus();
+    }
+
+    function updateStatus() {
+      const indicator = document.getElementById('statusIndicator');
+      const text = document.getElementById('statusText');
+      
+      if (llama.isAvailable) {
+        indicator.className = 'status-indicator online';
+        text.textContent = '✓ Llama AI is online and ready';
+      } else {
+        indicator.className = 'status-indicator offline';
+        text.textContent = '✗ Llama AI service not available';
+      }
+    }
+
+    function setupTabNavigation() {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.getAttribute('data-tab');
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(tabName).classList.add('active');
+        });
+      });
+    }
+
+    async function generateProductDescription() {
+      const name = document.getElementById('productName').value;
+      const category = document.getElementById('productCategory').value;
+
+      if (!name || !category) {
+        showAlert('Please fill in product name and category', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.generateProductDescription(name, category);
+        document.getElementById('descriptionOutput').textContent = result;
+        document.getElementById('descriptionOutput').style.display = 'block';
+      }, 'generateDescBtn');
+    }
+
+    async function generateProductTitles() {
+      const desc = document.getElementById('titleInput').value;
+      if (!desc) {
+        showAlert('Please enter a product description', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.generateProductTitles(desc);
+        document.getElementById('titlesOutput').textContent = result;
+        document.getElementById('titlesOutput').style.display = 'block';
+      }, 'generateTitlesBtn');
+    }
+
+    async function enhanceText() {
+      const text = document.getElementById('enhanceInput').value;
+      if (!text) {
+        showAlert('Please enter text to enhance', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.enhanceText(text);
+        document.getElementById('enhanceOutput').textContent = result;
+        document.getElementById('enhanceOutput').style.display = 'block';
+      }, 'enhanceBtn');
+    }
+
+    async function getWritingSuggestion() {
+      const text = document.getElementById('suggestionInput').value;
+      if (!text) {
+        showAlert('Please enter text for suggestions', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.getWritingSuggestion(text);
+        document.getElementById('suggestionOutput').textContent = result;
+        document.getElementById('suggestionOutput').style.display = 'block';
+      }, 'suggestionBtn');
+    }
+
+    async function generateFAQAnswer() {
+      const question = document.getElementById('faqQuestion').value;
+      const context = document.getElementById('faqContext').value;
+
+      if (!question) {
+        showAlert('Please enter a question', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.generateFAQAnswer(question, context);
+        document.getElementById('faqOutput').textContent = result;
+        document.getElementById('faqOutput').style.display = 'block';
+      }, 'faqBtn');
+    }
+
+    async function analyzeSentiment() {
+      const text = document.getElementById('sentimentInput').value;
+      if (!text) {
+        showAlert('Please enter feedback to analyze', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.analyzeSentiment(text);
+        document.getElementById('sentimentOutput').textContent = result;
+        document.getElementById('sentimentOutput').style.display = 'block';
+      }, 'sentimentBtn');
+    }
+
+    async function runAI(fn, btnId) {
+      if (!llama.isAvailable) {
+        showAlert('Llama AI service not available. Please install Ollama and start the service.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById(btnId);
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Processing...';
+
+      try {
+        await fn();
+        showAlert('AI processing complete', 'success');
+      } catch (error) {
+        showAlert('Error: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = btn.textContent.replace('Processing...', 'Done').split(' ')[0] + ' ' + btn.textContent.split(' ').slice(1).join(' ');
+        setTimeout(() => {
+          btn.textContent = btn.textContent.includes('Description') ? 'Generate Description' :
+                           btn.textContent.includes('Titles') ? 'Generate Titles' :
+                           btn.textContent.includes('Enhance') ? 'Enhance Text' :
+                           btn.textContent.includes('Suggestion') ? 'Get Suggestion' :
+                           btn.textContent.includes('Answer') ? 'Generate Answer' :
+                           'Analyze Sentiment';
+        }, 1000);
+      }
+    }
+
+    function saveSettings() {
+      const apiUrl = document.getElementById('apiUrl').value;
+      const model = document.getElementById('modelName').value;
+      const temperature = document.getElementById('temperature').value;
+      const maxTokens = document.getElementById('maxTokens').value;
+
+      localStorage.setItem('llamaApiUrl', apiUrl);
+      localStorage.setItem('llamaModel', model);
+      localStorage.setItem('llamaTemperature', temperature);
+      localStorage.setItem('llamaMaxTokens', maxTokens);
+
+      llama = new LlamaAI({ apiUrl, model, temperature: parseFloat(temperature), maxTokens: parseInt(maxTokens) });
+      showAlert('Settings saved and Llama AI reinitialized', 'success');
+    }
+
+    function showAlert(message, type) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert ${type}`;
+      alertDiv.textContent = message;
+      document.getElementById('alertContainer').appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
+    }
+  </script>
+</body>
+</html>
