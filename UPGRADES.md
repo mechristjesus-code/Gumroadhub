@@ -7,7 +7,7 @@ This document tracks the progression of the Gumroad Creator Hub prototype.
 - [x] **2. Advanced License Management**: Implemented `LicenseProvider` and `LicensesScreen` with search/verify capabilities.
 
 ## New Module
-- [ ] **E-book Creator**: Audio-to-text AI transcription, smart editing, and AI suggestions.
+- [x] **E-book Creator**: Audio-to-text AI transcription, smart editing, and AI suggestions.
 
 ## Upcoming Enhancements & Future Modules
 

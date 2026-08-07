@@ -24,6 +24,7 @@ dependencies:
   path_provider: ^2.1.2
   flutter_svg: ^2.0.10
   google_fonts: ^6.1.0
+  fl_chart: ^0.66.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../providers/analytics_provider.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -38,9 +39,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 const SizedBox(height: 16),
                 _buildStatCard('Total Sales', data.totalSales.toString()),
                 const SizedBox(height: 16),
-                _buildStatCard('Customers', data.customers.toString()),
-                const SizedBox(height: 16),
-                _buildPlaceholderChart(),
+                _buildRevenueChart(),
               ],
             ),
           );
@@ -58,11 +57,36 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildPlaceholderChart() {
+  Widget _buildRevenueChart() {
     return Expanded(
-      child: Container(
-        color: Colors.grey[200],
-        child: const Center(child: Text('Chart Placeholder')),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: LineChart(
+            LineChartData(
+              lineBarsData: [
+                LineChartBarData(
+                  spots: [
+                    const FlSpot(0, 1000),
+                    const FlSpot(1, 1500),
+                    const FlSpot(2, 1200),
+                    const FlSpot(3, 2000),
+                    const FlSpot(4, 1800),
+                  ],
+                  isCurved: true,
+                  color: Colors.pinkAccent,
+                  barWidth: 4,
+                  dotData: const FlDotData(show: false),
+                ),
+              ],
+              titlesData: const FlTitlesData(
+                leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+              ),
+              borderData: FlBorderData(show: true),
+            ),
+          ),
+        ),
       ),
     );
   }
