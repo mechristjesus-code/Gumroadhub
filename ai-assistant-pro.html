@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gumroad Creator Hub - AI Assistant Pro</title>
+  <style>
+    :root {
+      --primary: #ff90e8;
+      --secondary: #4a90e2;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --bg: #f4f4f0;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --border: #000000;
+      --light-gray: #ecf0f1;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 10px 15px;
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-bottom: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 6px 6px 0 0;
+    }
+    .tab:hover {
+      background: var(--primary);
+    }
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      box-shadow: 4px 4px 0px var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    button {
+      background-color: var(--primary);
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--text);
+      margin-top: 10px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .output-box {
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+      min-height: 100px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--light-gray);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+    .alert.success {
+      background: #d4edda;
+      border-color: var(--success);
+      color: #155724;
+    }
+    .alert.error {
+      background: #f8d7da;
+      border-color: var(--danger);
+      color: #721c24;
+    }
+    .alert.info {
+      background: #d1ecf1;
+      border-color: var(--secondary);
+      color: #0c5460;
+    }
+    .review-input-group {
+      margin-bottom: 15px;
+    }
+    .review-item {
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .review-item button {
+      width: auto;
+      padding: 5px 10px;
+      font-size: 12px;
+      margin: 0;
+    }
+    .copy-btn {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 20px;
+      }
+      .tabs {
+        gap: 5px;
+      }
+      .tab {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 AI Assistant Pro</h1>
+      <p>Advanced creator tools powered by TinyLlama</p>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="reviews">📝 Review Tools</div>
+      <div class="tab" data-tab="support">💬 Support Tools</div>
+      <div class="tab" data-tab="marketing">📢 Marketing Tools</div>
+      <div class="tab" data-tab="competitor">🔍 Competitor Analysis</div>
+    </div>
+
+    <!-- Review Tools Tab -->
+    <div id="reviews" class="tab-content active">
+      <div class="card">
+        <h2>Review Summarizer</h2>
+        <p>Automatically summarize multiple customer reviews to identify key themes and sentiment.</p>
+        
+        <div class="review-input-group">
+          <label>Add Customer Reviews</label>
+          <textarea id="reviewInput" placeholder="Paste a customer review..."></textarea>
+          <button onclick="addReview()">Add Review</button>
+        </div>
+
+        <div id="reviewsList"></div>
+
+        <button id="summarizeBtn" onclick="summarizeReviews()" style="display: none;">Summarize All Reviews</button>
+        <div id="reviewsOutput" class="output-box" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Support Tools Tab -->
+    <div id="support" class="tab-content">
+      <div class="card">
+        <h2>Support Response Drafter</h2>
+        <p>Generate professional, empathetic customer support responses instantly.</p>
+        
+        <div class="form-group">
+          <label>Customer Message</label>
+          <textarea id="customerMessage" placeholder="Paste the customer's message..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Context (Optional)</label>
+          <textarea id="supportContext" placeholder="Add any relevant context about the issue..."></textarea>
+        </div>
+
+        <button onclick="draftSupportResponse()">Draft Response</button>
+        <div id="supportOutput" class="output-box" style="display: none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>Product Comparison</h2>
+        <p>Generate detailed comparisons between two products.</p>
+        
+        <div class="form-group">
+          <label>Product 1 Description</label>
+          <textarea id="product1" placeholder="Describe the first product..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Product 2 Description</label>
+          <textarea id="product2" placeholder="Describe the second product..."></textarea>
+        </div>
+
+        <button onclick="generateComparison()">Generate Comparison</button>
+        <div id="comparisonOutput" class="output-box" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Marketing Tools Tab -->
+    <div id="marketing" class="tab-content">
+      <div class="card">
+        <h2>Marketing Copy Generator</h2>
+        <p>Create compelling, conversion-focused marketing copy for your products.</p>
+        
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="productName" placeholder="e.g., Digital Marketing Course">
+        </div>
+
+        <div class="form-group">
+          <label>Key Features</label>
+          <textarea id="productFeatures" placeholder="List the main features separated by commas..."></textarea>
+        </div>
+
+        <button onclick="generateMarketingCopy()">Generate Copy</button>
+        <div id="marketingOutput" class="output-box" style="display: none;"></div>
+      </div>
+    </div>
+
+    <!-- Competitor Analysis Tab -->
+    <div id="competitor" class="tab-content">
+      <div class="card">
+        <h2>Competitor Review Analyzer</h2>
+        <p>Analyze competitor reviews and get actionable insights for improvement.</p>
+        
+        <div class="form-group">
+          <label>Competitor Review</label>
+          <textarea id="competitorReview" placeholder="Paste a competitor's review or feedback..."></textarea>
+        </div>
+
+        <button onclick="analyzeCompetitor()">Analyze & Get Insights</button>
+        <div id="competitorOutput" class="output-box" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="llama-ai.js"></script>
+  <script>
+    let llama = null;
+    let reviews = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeLlama();
+      setupTabNavigation();
+    });
+
+    function initializeLlama() {
+      const apiUrl = localStorage.getItem('llamaApiUrl') || 'http://localhost:11434/api';
+      const model = localStorage.getItem('llamaModel') || 'tinyllama';
+      llama = new LlamaAI({ apiUrl, model });
+    }
+
+    function setupTabNavigation() {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabName = tab.getAttribute('data-tab');
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(tabName).classList.add('active');
+        });
+      });
+    }
+
+    // Review Tools
+    function addReview() {
+      const review = document.getElementById('reviewInput').value;
+      if (!review) {
+        showAlert('Please enter a review', 'error');
+        return;
+      }
+
+      reviews.push(review);
+      renderReviews();
+      document.getElementById('reviewInput').value = '';
+      document.getElementById('summarizeBtn').style.display = reviews.length > 0 ? 'block' : 'none';
+    }
+
+    function renderReviews() {
+      const list = document.getElementById('reviewsList');
+      list.innerHTML = reviews.map((review, index) => `
+        <div class="review-item">
+          <span>${review.substring(0, 50)}...</span>
+          <button onclick="removeReview(${index})" style="width: auto; padding: 5px 10px; font-size: 12px; margin: 0;">Remove</button>
+        </div>
+      `).join('');
+    }
+
+    function removeReview(index) {
+      reviews.splice(index, 1);
+      renderReviews();
+      document.getElementById('summarizeBtn').style.display = reviews.length > 0 ? 'block' : 'none';
+    }
+
+    async function summarizeReviews() {
+      if (reviews.length === 0) {
+        showAlert('Please add at least one review', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.summarizeReviews(reviews);
+        document.getElementById('reviewsOutput').textContent = result;
+        document.getElementById('reviewsOutput').style.display = 'block';
+      });
+    }
+
+    // Support Tools
+    async function draftSupportResponse() {
+      const message = document.getElementById('customerMessage').value;
+      const context = document.getElementById('supportContext').value;
+
+      if (!message) {
+        showAlert('Please enter a customer message', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.draftSupportResponse(message, context);
+        document.getElementById('supportOutput').textContent = result;
+        document.getElementById('supportOutput').style.display = 'block';
+      });
+    }
+
+    async function generateComparison() {
+      const product1 = document.getElementById('product1').value;
+      const product2 = document.getElementById('product2').value;
+
+      if (!product1 || !product2) {
+        showAlert('Please describe both products', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.generateProductComparison(product1, product2);
+        document.getElementById('comparisonOutput').textContent = result;
+        document.getElementById('comparisonOutput').style.display = 'block';
+      });
+    }
+
+    // Marketing Tools
+    async function generateMarketingCopy() {
+      const name = document.getElementById('productName').value;
+      const features = document.getElementById('productFeatures').value;
+
+      if (!name || !features) {
+        showAlert('Please enter product name and features', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.generateMarketingCopy(name, features);
+        document.getElementById('marketingOutput').textContent = result;
+        document.getElementById('marketingOutput').style.display = 'block';
+      });
+    }
+
+    // Competitor Analysis
+    async function analyzeCompetitor() {
+      const review = document.getElementById('competitorReview').value;
+
+      if (!review) {
+        showAlert('Please enter a competitor review', 'error');
+        return;
+      }
+
+      await runAI(async () => {
+        const result = await llama.analyzeCompetitorReview(review);
+        document.getElementById('competitorOutput').textContent = result;
+        document.getElementById('competitorOutput').style.display = 'block';
+      });
+    }
+
+    async function runAI(fn) {
+      if (!llama.isAvailable) {
+        showAlert('Llama AI service not available. Please start Ollama.', 'error');
+        return;
+      }
+
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading"></span> Processing...';
+
+      try {
+        await fn();
+        showAlert('AI processing complete', 'success');
+      } catch (error) {
+        showAlert('Error: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = btn.textContent.split(' ')[0] + ' ' + btn.textContent.split(' ').slice(1).join(' ');
+      }
+    }
+
+    function showAlert(message, type) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert ${type}`;
+      alertDiv.textContent = message;
+      document.getElementById('alertContainer').appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
+    }
+  </script>
+</body>
+</html>

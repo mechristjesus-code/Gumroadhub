@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gumroad Creator Hub - Secure Login</title>
+  <style>
+    :root {
+      --primary: #ff90e8;
+      --secondary: #4a90e2;
+      --danger: #e74c3c;
+      --success: #27ae60;
+      --bg: #f4f4f0;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --border: #000000;
+      --light-gray: #ecf0f1;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-container {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 8px 8px 0px var(--border);
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+    }
+    .login-header p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: inherit;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 144, 232, 0.1);
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .pin-input-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .pin-input {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .pin-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 144, 232, 0.1);
+    }
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border-left: 4px solid;
+      font-size: 14px;
+    }
+    .alert.error {
+      background: #f8d7da;
+      border-color: var(--danger);
+      color: #721c24;
+    }
+    .alert.success {
+      background: #d4edda;
+      border-color: var(--success);
+      color: #155724;
+    }
+    .alert.info {
+      background: #d1ecf1;
+      border-color: var(--secondary);
+      color: #0c5460;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-bottom: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 6px 6px 0 0;
+    }
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .forgot-pin {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .forgot-pin a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .forgot-pin a:hover {
+      text-decoration: underline;
+    }
+    .setup-info {
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 20px;
+      }
+      .pin-input {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h1>🔐 Admin Access</h1>
+      <p>Gumroad Creator Hub</p>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <!-- Login Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('login')">Login</div>
+      <div class="tab" onclick="switchTab('setup')">Setup</div>
+    </div>
+
+    <!-- Login Tab -->
+    <div id="login" class="tab-content active">
+      <div class="form-group">
+        <label>Authentication Method</label>
+        <select id="authMethod" onchange="updateAuthUI()">
+          <option value="pin">PIN Code (4 digits)</option>
+          <option value="password">Password</option>
+          <option value="biometric">Biometric (if available)</option>
+        </select>
+      </div>
+
+      <!-- PIN Login -->
+      <div id="pinLogin">
+        <label style="text-align: center; display: block; margin-bottom: 15px;">Enter Your PIN</label>
+        <div class="pin-input-group">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="pin1" onkeyup="movePinFocus(this, 'pin2')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="pin2" onkeyup="movePinFocus(this, 'pin3')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="pin3" onkeyup="movePinFocus(this, 'pin4')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="pin4" onkeyup="submitOnComplete(this)">
+        </div>
+        <button onclick="loginWithPIN()">Unlock Admin Panel</button>
+      </div>
+
+      <!-- Password Login -->
+      <div id="passwordLogin" style="display: none;">
+        <div class="form-group">
+          <label>Admin Password</label>
+          <input type="password" id="adminPassword" placeholder="Enter your password">
+        </div>
+        <button onclick="loginWithPassword()">Login</button>
+      </div>
+
+      <!-- Biometric Login -->
+      <div id="biometricLogin" style="display: none;">
+        <button onclick="loginWithBiometric()" style="padding: 20px; font-size: 18px;">
+          👆 Use Fingerprint / Face ID
+        </button>
+        <p style="text-align: center; color: #666; font-size: 12px; margin-top: 15px;">
+          Biometric authentication requires device support
+        </p>
+      </div>
+
+      <div class="forgot-pin">
+        <a href="#" onclick="showResetOptions(); return false;">Forgot PIN/Password?</a>
+      </div>
+    </div>
+
+    <!-- Setup Tab -->
+    <div id="setup" class="tab-content">
+      <div class="setup-info">
+        <strong>First Time Setup</strong><br>
+        Set up your security credentials to protect your admin panel. Choose your preferred authentication method.
+      </div>
+
+      <div class="form-group">
+        <label>Setup Method</label>
+        <select id="setupMethod" onchange="updateSetupUI()">
+          <option value="pin">PIN Code (4 digits)</option>
+          <option value="password">Password</option>
+        </select>
+      </div>
+
+      <!-- PIN Setup -->
+      <div id="pinSetup">
+        <label style="text-align: center; display: block; margin-bottom: 15px;">Create a 4-Digit PIN</label>
+        <div class="pin-input-group">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="newPin1" onkeyup="movePinFocus(this, 'newPin2')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="newPin2" onkeyup="movePinFocus(this, 'newPin3')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="newPin3" onkeyup="movePinFocus(this, 'newPin4')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="newPin4">
+        </div>
+
+        <label style="text-align: center; display: block; margin: 20px 0 15px 0;">Confirm PIN</label>
+        <div class="pin-input-group">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="confirmPin1" onkeyup="movePinFocus(this, 'confirmPin2')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="confirmPin2" onkeyup="movePinFocus(this, 'confirmPin3')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="confirmPin3" onkeyup="movePinFocus(this, 'confirmPin4')">
+          <input type="text" class="pin-input" maxlength="1" inputmode="numeric" id="confirmPin4">
+        </div>
+
+        <button onclick="setupPIN()">Set PIN</button>
+      </div>
+
+      <!-- Password Setup -->
+      <div id="passwordSetup" style="display: none;">
+        <div class="form-group">
+          <label>Create Admin Password</label>
+          <input type="password" id="newPassword" placeholder="Min 8 characters">
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm password">
+        </div>
+        <button onclick="setupPassword()">Set Password</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize auth on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuthStatus();
+    });
+
+    function checkAuthStatus() {
+      const isAuthenticated = sessionStorage.getItem('adminAuthenticated');
+      if (isAuthenticated === 'true') {
+        window.location.href = 'admin.html';
+      }
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabName).classList.add('active');
+    }
+
+    function updateAuthUI() {
+      const method = document.getElementById('authMethod').value;
+      document.getElementById('pinLogin').style.display = method === 'pin' ? 'block' : 'none';
+      document.getElementById('passwordLogin').style.display = method === 'password' ? 'block' : 'none';
+      document.getElementById('biometricLogin').style.display = method === 'biometric' ? 'block' : 'none';
+    }
+
+    function updateSetupUI() {
+      const method = document.getElementById('setupMethod').value;
+      document.getElementById('pinSetup').style.display = method === 'pin' ? 'block' : 'none';
+      document.getElementById('passwordSetup').style.display = method === 'password' ? 'block' : 'none';
+    }
+
+    function movePinFocus(current, nextId) {
+      if (current.value.length === 1 && nextId) {
+        document.getElementById(nextId).focus();
+      }
+    }
+
+    function submitOnComplete(element) {
+      if (element.value.length === 1) {
+        loginWithPIN();
+      }
+    }
+
+    function getPINValue(prefix) {
+      const pin = [
+        document.getElementById(prefix + '1').value,
+        document.getElementById(prefix + '2').value,
+        document.getElementById(prefix + '3').value,
+        document.getElementById(prefix + '4').value
+      ].join('');
+      return pin;
+    }
+
+    function loginWithPIN() {
+      const pin = getPINValue('pin');
+      const storedPin = localStorage.getItem('adminPIN');
+
+      if (!storedPin) {
+        showAlert('No PIN set. Please set up your PIN first.', 'error');
+        return;
+      }
+
+      if (pin.length !== 4) {
+        showAlert('Please enter a 4-digit PIN', 'error');
+        return;
+      }
+
+      if (pin === storedPin) {
+        sessionStorage.setItem('adminAuthenticated', 'true');
+        showAlert('Authentication successful!', 'success');
+        setTimeout(() => window.location.href = 'admin.html', 1000);
+      } else {
+        showAlert('Invalid PIN. Please try again.', 'error');
+        clearPINInputs('pin');
+      }
+    }
+
+    function loginWithPassword() {
+      const password = document.getElementById('adminPassword').value;
+      const storedPassword = localStorage.getItem('adminPassword');
+
+      if (!storedPassword) {
+        showAlert('No password set. Please set up your password first.', 'error');
+        return;
+      }
+
+      if (password === storedPassword) {
+        sessionStorage.setItem('adminAuthenticated', 'true');
+        showAlert('Authentication successful!', 'success');
+        setTimeout(() => window.location.href = 'admin.html', 1000);
+      } else {
+        showAlert('Invalid password. Please try again.', 'error');
+      }
+    }
+
+    function loginWithBiometric() {
+      if (window.PublicKeyCredential) {
+        showAlert('Biometric authentication is not yet configured.', 'info');
+      } else {
+        showAlert('Biometric authentication is not supported on this device.', 'error');
+      }
+    }
+
+    function setupPIN() {
+      const newPin = getPINValue('newPin');
+      const confirmPin = getPINValue('confirmPin');
+
+      if (newPin.length !== 4 || confirmPin.length !== 4) {
+        showAlert('Please enter valid 4-digit PINs', 'error');
+        return;
+      }
+
+      if (newPin !== confirmPin) {
+        showAlert('PINs do not match. Please try again.', 'error');
+        clearPINInputs('newPin');
+        clearPINInputs('confirmPin');
+        return;
+      }
+
+      localStorage.setItem('adminPIN', newPin);
+      showAlert('PIN set successfully! You can now login with your PIN.', 'success');
+      setTimeout(() => switchTab('login'), 1500);
+    }
+
+    function setupPassword() {
+      const password = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password.length < 8) {
+        showAlert('Password must be at least 8 characters long', 'error');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showAlert('Passwords do not match. Please try again.', 'error');
+        return;
+      }
+
+      localStorage.setItem('adminPassword', password);
+      showAlert('Password set successfully! You can now login with your password.', 'success');
+      setTimeout(() => switchTab('login'), 1500);
+    }
+
+    function clearPINInputs(prefix) {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(prefix + i).value = '';
+      }
+      document.getElementById(prefix + '1').focus();
+    }
+
+    function showResetOptions() {
+      const choice = prompt('How would you like to reset?\n1. Reset PIN\n2. Reset Password\n3. Reset All\n\nEnter 1, 2, or 3:');
+      
+      if (choice === '1') {
+        localStorage.removeItem('adminPIN');
+        showAlert('PIN reset. Please set a new PIN in the Setup tab.', 'success');
+      } else if (choice === '2') {
+        localStorage.removeItem('adminPassword');
+        showAlert('Password reset. Please set a new password in the Setup tab.', 'success');
+      } else if (choice === '3') {
+        localStorage.removeItem('adminPIN');
+        localStorage.removeItem('adminPassword');
+        showAlert('All credentials reset. Please set up new credentials in the Setup tab.', 'success');
+      }
+    }
+
+    function showAlert(message, type) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert ${type}`;
+      alertDiv.textContent = message;
+      document.getElementById('alertContainer').appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
+    }
+  </script>
+</body>
+</html>

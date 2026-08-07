@@ -165,6 +165,47 @@ class LlamaAI {
   }
 
   /**
+   * Summarize multiple customer reviews
+   */
+  async summarizeReviews(reviews) {
+    const reviewText = reviews.join('\n\n');
+    const prompt = `Summarize these customer reviews in 2-3 sentences, highlighting key themes and sentiment:\n\n${reviewText}`;
+    return this.generate(prompt);
+  }
+
+  /**
+   * Draft customer support response
+   */
+  async draftSupportResponse(customerMessage, context = '') {
+    const prompt = `Draft a professional, empathetic customer support response to this message:\n\nCustomer: ${customerMessage}\n\nContext: ${context}\n\nKeep response under 100 words and maintain a friendly tone.`;
+    return this.generate(prompt);
+  }
+
+  /**
+   * Generate product comparison
+   */
+  async generateProductComparison(product1, product2) {
+    const prompt = `Compare these two products in a table format:\n\nProduct 1: ${product1}\nProduct 2: ${product2}\n\nHighlight key differences and similarities.`;
+    return this.generate(prompt);
+  }
+
+  /**
+   * Generate marketing copy
+   */
+  async generateMarketingCopy(productName, features) {
+    const prompt = `Generate compelling marketing copy for this product:\n\nName: ${productName}\nFeatures: ${features}\n\nMake it persuasive and conversion-focused (under 150 words).`;
+    return this.generate(prompt);
+  }
+
+  /**
+   * Analyze competitor review
+   */
+  async analyzeCompetitorReview(review) {
+    const prompt = `Analyze this competitor review and suggest how we can improve:\n\n${review}\n\nProvide 3 actionable insights.`;
+    return this.generate(prompt);
+  }
+
+  /**
    * Get model info
    */
   async getModelInfo() {

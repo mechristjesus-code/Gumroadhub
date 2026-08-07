@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gumroad Creator Hub - Multi-Shop Manager</title>
+  <style>
+    :root {
+      --primary: #ff90e8;
+      --secondary: #4a90e2;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --bg: #f4f4f0;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --border: #000000;
+      --light-gray: #ecf0f1;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .shop-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+    .shop-tab {
+      padding: 10px 20px;
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .shop-tab:hover {
+      background: var(--primary);
+    }
+    .shop-tab.active {
+      background: var(--primary);
+      color: white;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      box-shadow: 4px 4px 0px var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    button {
+      background-color: var(--primary);
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--text);
+      margin-top: 10px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    button.danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    button.success {
+      background-color: var(--success);
+      color: white;
+    }
+    .shops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .shop-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .shop-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 4px 8px 12px rgba(0,0,0,0.1);
+    }
+    .shop-card.active {
+      border-color: var(--primary);
+      background: rgba(255, 144, 232, 0.1);
+    }
+    .shop-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+    }
+    .shop-card .stats {
+      font-size: 12px;
+      color: #666;
+      margin: 10px 0;
+    }
+    .shop-card .stat {
+      padding: 5px 0;
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 2px solid var(--border);
+      padding: 12px;
+      text-align: left;
+    }
+    th {
+      background: var(--light-gray);
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background: var(--light-gray);
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .action-buttons button {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 12px;
+      margin: 0;
+    }
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+    .alert.success {
+      background: #d4edda;
+      border-color: var(--success);
+      color: #155724;
+    }
+    .alert.error {
+      background: #f8d7da;
+      border-color: var(--danger);
+      color: #721c24;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      background: var(--light-gray);
+    }
+    .badge.active {
+      background: #d4edda;
+      color: #155724;
+    }
+    @media (max-width: 768px) {
+      .shops-grid {
+        grid-template-columns: 1fr;
+      }
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏪 Multi-Shop Manager</h1>
+      <button onclick="goBackToAdmin()" style="width: auto;">← Back to Admin</button>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <!-- Create New Shop -->
+    <div class="card">
+      <h2>Create New Shop</h2>
+      <div class="form-group">
+        <label>Shop Name</label>
+        <input type="text" id="shopName" placeholder="e.g., My Digital Store">
+      </div>
+      <div class="form-group">
+        <label>Shop Description</label>
+        <textarea id="shopDesc" placeholder="Describe your shop..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Shop Currency</label>
+        <select id="shopCurrency">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+          <option value="CAD">CAD (C$)</option>
+          <option value="AUD">AUD (A$)</option>
+        </select>
+      </div>
+      <button onclick="createShop()" class="success">Create Shop</button>
+    </div>
+
+    <!-- Your Shops -->
+    <div class="card">
+      <h2>Your Shops</h2>
+      <div class="shops-grid" id="shopsGrid">
+        <p style="grid-column: 1/-1; color: #999; text-align: center;">No shops created yet. Create your first shop above!</p>
+      </div>
+    </div>
+
+    <!-- Shop Details & Management -->
+    <div id="shopDetailsSection" style="display: none;">
+      <div class="card">
+        <h2>Shop Details: <span id="currentShopName"></span></h2>
+        
+        <div class="form-group">
+          <label>Shop Name</label>
+          <input type="text" id="editShopName" placeholder="Shop name">
+        </div>
+        <div class="form-group">
+          <label>Shop Description</label>
+          <textarea id="editShopDesc" placeholder="Shop description"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Shop Currency</label>
+          <select id="editShopCurrency">
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="CAD">CAD (C$)</option>
+            <option value="AUD">AUD (A$)</option>
+          </select>
+        </div>
+        <button onclick="updateShop()" class="success">Update Shop</button>
+        <button onclick="deleteCurrentShop()" class="danger">Delete Shop</button>
+      </div>
+
+      <!-- Shop Statistics -->
+      <div class="card">
+        <h2>Shop Statistics</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+          <div style="text-align: center;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--primary);" id="shopProducts">0</div>
+            <div style="font-size: 12px; color: #666;">Products</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--primary);" id="shopSales">0</div>
+            <div style="font-size: 12px; color: #666;">Total Sales</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 24px; font-weight: bold; color: var(--primary);" id="shopRevenue">$0</div>
+            <div style="font-size: 12px; color: #666;">Revenue</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shop Products -->
+      <div class="card">
+        <h2>Products in This Shop</h2>
+        <div class="table-container">
+          <table id="shopProductsTable">
+            <thead>
+              <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="shopProductsBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let shops = [];
+    let currentShopId = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadShops();
+      renderShops();
+    });
+
+    function loadShops() {
+      shops = JSON.parse(localStorage.getItem('shops') || '[]');
+      if (shops.length === 0) {
+        shops = [];
+      }
+    }
+
+    function saveShops() {
+      localStorage.setItem('shops', JSON.stringify(shops));
+    }
+
+    function createShop() {
+      const name = document.getElementById('shopName').value;
+      const desc = document.getElementById('shopDesc').value;
+      const currency = document.getElementById('shopCurrency').value;
+
+      if (!name) {
+        showAlert('Please enter a shop name', 'error');
+        return;
+      }
+
+      const shop = {
+        id: 'shop_' + Date.now(),
+        name,
+        description: desc,
+        currency,
+        createdAt: new Date().toISOString(),
+        products: [],
+        sales: [],
+        settings: {}
+      };
+
+      shops.push(shop);
+      saveShops();
+
+      document.getElementById('shopName').value = '';
+      document.getElementById('shopDesc').value = '';
+      document.getElementById('shopCurrency').value = 'USD';
+
+      renderShops();
+      showAlert('Shop created successfully!', 'success');
+    }
+
+    function renderShops() {
+      const grid = document.getElementById('shopsGrid');
+      
+      if (shops.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1/-1; color: #999; text-align: center;">No shops created yet. Create your first shop above!</p>';
+        return;
+      }
+
+      grid.innerHTML = shops.map(shop => `
+        <div class="shop-card ${currentShopId === shop.id ? 'active' : ''}" onclick="selectShop('${shop.id}')">
+          <h3>${shop.name}</h3>
+          <div class="stats">
+            <div class="stat">📦 ${shop.products.length} products</div>
+            <div class="stat">💰 ${shop.currency}</div>
+            <div class="stat">📅 ${new Date(shop.createdAt).toLocaleDateString()}</div>
+          </div>
+          <span class="badge active">Active</span>
+        </div>
+      `).join('');
+    }
+
+    function selectShop(shopId) {
+      currentShopId = shopId;
+      const shop = shops.find(s => s.id === shopId);
+
+      if (shop) {
+        document.getElementById('shopDetailsSection').style.display = 'block';
+        document.getElementById('currentShopName').textContent = shop.name;
+        document.getElementById('editShopName').value = shop.name;
+        document.getElementById('editShopDesc').value = shop.description;
+        document.getElementById('editShopCurrency').value = shop.currency;
+
+        // Update statistics
+        document.getElementById('shopProducts').textContent = shop.products.length;
+        document.getElementById('shopSales').textContent = shop.sales.length;
+        const revenue = shop.sales.reduce((sum, s) => sum + (s.amount || 0), 0);
+        document.getElementById('shopRevenue').textContent = shop.currency + ' ' + revenue.toFixed(2);
+
+        // Update products table
+        updateShopProductsTable(shop);
+      }
+
+      renderShops();
+    }
+
+    function updateShopProductsTable(shop) {
+      const tbody = document.getElementById('shopProductsBody');
+      tbody.innerHTML = '';
+
+      if (shop.products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">No products in this shop</td></tr>';
+        return;
+      }
+
+      shop.products.forEach(product => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product.name}</td>
+          <td>${shop.currency} ${product.price.toFixed(2)}</td>
+          <td><span class="badge active">Active</span></td>
+          <td>
+            <div class="action-buttons">
+              <button onclick="editProduct('${product.id}')">Edit</button>
+              <button onclick="removeProduct('${product.id}')" class="danger">Remove</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function updateShop() {
+      if (!currentShopId) return;
+
+      const shop = shops.find(s => s.id === currentShopId);
+      if (shop) {
+        shop.name = document.getElementById('editShopName').value;
+        shop.description = document.getElementById('editShopDesc').value;
+        shop.currency = document.getElementById('editShopCurrency').value;
+
+        saveShops();
+        renderShops();
+        selectShop(currentShopId);
+        showAlert('Shop updated successfully!', 'success');
+      }
+    }
+
+    function deleteCurrentShop() {
+      if (!currentShopId || !confirm('Are you sure you want to delete this shop?')) return;
+
+      shops = shops.filter(s => s.id !== currentShopId);
+      saveShops();
+      currentShopId = null;
+      document.getElementById('shopDetailsSection').style.display = 'none';
+      renderShops();
+      showAlert('Shop deleted successfully!', 'success');
+    }
+
+    function editProduct(productId) {
+      showAlert('Product editing coming soon!', 'error');
+    }
+
+    function removeProduct(productId) {
+      if (!currentShopId || !confirm('Remove this product from the shop?')) return;
+
+      const shop = shops.find(s => s.id === currentShopId);
+      if (shop) {
+        shop.products = shop.products.filter(p => p.id !== productId);
+        saveShops();
+        selectShop(currentShopId);
+        showAlert('Product removed!', 'success');
+      }
+    }
+
+    function showAlert(message, type) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert ${type}`;
+      alertDiv.textContent = message;
+      document.getElementById('alertContainer').appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 3000);
+    }
+
+    function goBackToAdmin() {
+      window.location.href = 'admin.html';
+    }
+  </script>
+</body>
+</html>
