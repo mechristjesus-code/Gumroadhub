@@ -14,10 +14,10 @@ verifyBtn.addEventListener('click', async () => {
     });
     const data = await response.json();
     console.log(data);
-    alert('Verification result logged to console.');
+    alert('Verification result: ' + JSON.stringify(data));
   } catch (error) {
     console.error('Error:', error);
-    alert('An error occurred during verification.');
+    alert('Error during verification: ' + error.message);
   }
 });
 
@@ -35,5 +35,5 @@ createProductBtn.addEventListener('click', () => {
   };
   
   console.log('Product to be created:', productData);
-  alert('Product details logged to console (API integration pending).');
+  alert('Product "' + productData.name + '" created locally (Simulation).');
 });

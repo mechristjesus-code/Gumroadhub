@@ -473,7 +473,28 @@
     }
 
     function editProduct(productId) {
+<<<<<<< HEAD
       showAlert('Product editing coming soon!', 'error');
+=======
+      if (!currentShopId) return;
+      const shop = shops.find(s => s.id === currentShopId);
+      if (!shop) return;
+      
+      const product = shop.products.find(p => p.id === productId);
+      if (!product) return;
+
+      const newName = prompt('Enter new product name:', product.name);
+      if (newName === null) return;
+      const newPrice = parseFloat(prompt('Enter new product price:', product.price));
+      if (isNaN(newPrice)) return;
+
+      product.name = newName;
+      product.price = newPrice;
+
+      saveShops();
+      selectShop(currentShopId);
+      showAlert('Product updated!', 'success');
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
     }
 
     function removeProduct(productId) {

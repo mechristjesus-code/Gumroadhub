@@ -216,10 +216,23 @@
       </div>
     </div>
 
+<<<<<<< HEAD
     <div class="card" onclick="navigateTo('admin.html')">
       <div class="card-icon">📊</div>
       <h3>Dashboard</h3>
       <p>View your store analytics and metrics</p>
+=======
+    <div class="card" onclick="navigateTo('creator-hub-pro.html')">
+      <div class="card-icon">🚀</div>
+      <h3>Pro Dashboard</h3>
+      <p>Unified view of your business & metrics</p>
+    </div>
+    
+    <div class="card" onclick="navigateTo('admin-offline.html')">
+      <div class="card-icon">📊</div>
+      <h3>Offline Admin</h3>
+      <p>Manage products & sales without internet</p>
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
     </div>
 
     <div class="card" onclick="navigateTo('ai-assistant.html')">
@@ -259,9 +272,19 @@
       <div class="nav-icon">🏠</div>
       <div>Home</div>
     </a>
+<<<<<<< HEAD
     <a class="nav-item" onclick="setActive(this); navigateTo('admin.html')">
       <div class="nav-icon">📊</div>
       <div>Admin</div>
+=======
+    <a class="nav-item" onclick="setActive(this); navigateTo('creator-hub-pro.html')">
+      <div class="nav-icon">🚀</div>
+      <div>Pro</div>
+    </a>
+    <a class="nav-item" onclick="setActive(this); navigateTo('admin-offline.html')">
+      <div class="nav-icon">📊</div>
+      <div>Offline</div>
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
     </a>
     <a class="nav-item" onclick="setActive(this); navigateTo('ai-assistant.html')">
       <div class="nav-icon">🤖</div>
@@ -329,15 +352,31 @@
     }
 
     function toggleSettings() {
+<<<<<<< HEAD
       const choice = confirm('Settings:\n1. Dark Mode (Tap OK)\n2. Clear Data (Tap Cancel)');
       if (choice) {
         document.documentElement.style.colorScheme = 
           document.documentElement.style.colorScheme === 'dark' ? 'light' : 'dark';
+=======
+      const choice = confirm('Settings:\n1. Toggle Dark Mode (Tap OK)\n2. Clear Data (Tap Cancel)');
+      if (choice) {
+        const isDark = document.documentElement.style.colorScheme === 'dark';
+        document.documentElement.style.colorScheme = isDark ? 'light' : 'dark';
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
       } else {
         if (confirm('Clear all local data? This cannot be undone.')) {
           localStorage.clear();
           sessionStorage.clear();
+<<<<<<< HEAD
           alert('Data cleared. Reloading...');
+=======
+          // Use IndexedDB clear as well
+          if (window.indexedDB) {
+            indexedDB.deleteDatabase('CreatorHub');
+          }
+          alert('All data cleared successfully. Reloading...');
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
           location.reload();
         }
       }

@@ -249,6 +249,12 @@
       <div class="nav-item" onclick="switchSection('licenses')">🔑 Licenses</div>
       <div class="nav-item" onclick="switchSection('backup')">💾 Backup</div>
       <div class="nav-item" onclick="switchSection('settings')">⚙️ Settings</div>
+<<<<<<< HEAD
+=======
+      <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--border);">
+      <a href="creator-hub-pro.html" style="display: block; padding: 10px; margin: 8px 0; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; color: white; text-align: center; font-size: 12px;">🚀 PRO VERSION</a>
+      <a href="mobile-home.html" style="display: block; padding: 10px; margin: 8px 0; background: var(--light-gray); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 500; text-decoration: none; color: var(--text); text-align: center; font-size: 12px;">🏠 HOME</a>
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
     </div>
 
     <!-- Main Content -->
@@ -675,8 +681,27 @@
       showAlert('Dashboard refreshed', 'success');
     }
 
+<<<<<<< HEAD
     function viewSyncQueue() {
       alert('Sync queue feature coming soon');
+=======
+    async function viewSyncQueue() {
+      const queue = await db.getSyncQueue();
+      if (queue.length === 0) {
+        showAlert('Sync queue is empty', 'info');
+        return;
+      }
+      
+      let message = 'Pending Sync Items:\n';
+      queue.forEach((item, index) => {
+        message += `${index + 1}. ${item.action} in ${item.storeName} (${new Date(item.timestamp).toLocaleTimeString()})\n`;
+      });
+      
+      if (confirm(message + '\nClear queue?')) {
+        await db.clearSyncQueue();
+        showAlert('Sync queue cleared', 'success');
+      }
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
     }
 
     function showAlert(message, type) {

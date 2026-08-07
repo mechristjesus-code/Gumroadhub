@@ -11,7 +11,7 @@ This document tracks the progression of the Gumroad Creator Hub prototype.
 - [x] **6. Enhanced Products Screen**: Created `ProductsScreenEnhanced` with JSON export button and improved search UI.
 
 ## New Module
-- [x] **E-book Creator**: Audio-to-text AI transcription, smart editing, and AI suggestions.
+- [ ] **E-book Creator**: Audio-to-text AI transcription, smart editing, and AI suggestions.
 
 ## Upcoming Enhancements & Future Modules
 

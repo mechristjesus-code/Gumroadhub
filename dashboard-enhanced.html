@@ -461,7 +461,25 @@
 
     function refreshData() {
       loadDashboardData();
+<<<<<<< HEAD
       alert('Dashboard refreshed!');
+=======
+      // Use a custom notification if available, or just a nicer alert
+      const msg = document.createElement('div');
+      msg.style.position = 'fixed';
+      msg.style.top = '20px';
+      msg.style.left = '50%';
+      msg.style.transform = 'translateX(-50%)';
+      msg.style.background = '#27ae60';
+      msg.style.color = 'white';
+      msg.style.padding = '10px 20px';
+      msg.style.borderRadius = '20px';
+      msg.style.fontWeight = 'bold';
+      msg.style.zIndex = '9999';
+      msg.textContent = '✓ Dashboard refreshed';
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 2000);
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
     }
 
     function exportReport() {

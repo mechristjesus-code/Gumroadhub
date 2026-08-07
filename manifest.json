@@ -2,7 +2,11 @@
   "name": "Gumroad Creator Hub",
   "short_name": "Creator Hub",
   "description": "Personal app for managing your Gumroad storefront on your phone",
+<<<<<<< HEAD
   "start_url": "/admin.html",
+=======
+  "start_url": "/creator-hub-pro.html",
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -33,10 +37,17 @@
   "categories": ["productivity", "business"],
   "shortcuts": [
     {
+<<<<<<< HEAD
       "name": "Admin Dashboard",
       "short_name": "Dashboard",
       "description": "Open the admin dashboard",
       "url": "/admin.html",
+=======
+      "name": "Pro Dashboard",
+      "short_name": "Pro",
+      "description": "Open the Pro dashboard",
+      "url": "/creator-hub-pro.html",
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%234a90e2' width='96' height='96'/><text x='50%' y='50%' font-size='50' fill='white' text-anchor='middle' dominant-baseline='central'>📊</text></svg>",

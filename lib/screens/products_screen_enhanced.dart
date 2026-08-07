@@ -54,6 +54,16 @@ class _ProductsScreenEnhancedState extends State<ProductsScreenEnhanced> {
         title: const Text('Products'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.file_upload),
+            tooltip: 'Import JSON Backup',
+            onPressed: () {
+              // TODO: Implement file picker and trigger _backupService.importProductsFromJson
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Import functionality coming soon.')),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.backup),
             tooltip: 'Export as JSON',
             onPressed: _exportAsJson,

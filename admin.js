@@ -151,7 +151,24 @@ function deleteProduct(productId) {
 }
 
 function editProduct(productId) {
-  showAlert('Edit functionality coming soon', 'info');
+  const products = JSON.parse(localStorage.getItem('products') || '[]');
+  const product = products.find(p => p.id === productId);
+  if (!product) return;
+
+  const newName = prompt('Enter new product name:', product.name);
+  if (newName === null) return;
+  const newPrice = parseFloat(prompt('Enter new product price:', product.price));
+  if (isNaN(newPrice)) return;
+  const newDesc = prompt('Enter new product description:', product.description);
+  if (newDesc === null) return;
+
+  product.name = newName;
+  product.price = newPrice;
+  product.description = newDesc;
+
+  localStorage.setItem('products', JSON.stringify(products));
+  loadProductsList();
+  showAlert('Product updated successfully', 'success');
 }
 
 // License Functions
@@ -320,7 +337,7 @@ function loadBackupHistory() {
       <td>${new Date(backup.timestamp).toLocaleString()}</td>
       <td>${backup.type.toUpperCase()}</td>
       <td>${(backup.size / 1024).toFixed(2)} KB</td>
-      <td><button onclick="alert('Download functionality coming soon')">Download</button></td>
+      <td><button onclick="downloadBackup('${backup.timestamp}')">Download</button></td>
     `;
     tbody.appendChild(row);
   });
@@ -402,6 +419,22 @@ function showAlert(message, type) {
 function logout() {
   if (confirm('Are you sure you want to logout?')) {
     localStorage.removeItem('adminLoggedIn');
-    location.href = 'index.html';
+    location.href = 'auth.html';
   }
+}
+
+function downloadBackup(timestamp) {
+  const backups = JSON.parse(localStorage.getItem('backups') || '[]');
+  const backup = backups.find(b => b.timestamp === timestamp);
+  if (!backup) return;
+
+  const products = JSON.parse(localStorage.getItem('products') || '[]');
+  const sales = JSON.parse(localStorage.getItem('sales') || '[]');
+  const licenses = JSON.parse(localStorage.getItem('licenses') || '[]');
+  const data = { products, sales, licenses, exportedAt: backup.timestamp };
+  
+  const content = JSON.stringify(data, null, 2);
+  const filename = `gumroad_backup_${new Date(timestamp).getTime()}.json`;
+  downloadFile(content, filename, 'application/json');
+  showAlert('Backup downloaded', 'success');
 }

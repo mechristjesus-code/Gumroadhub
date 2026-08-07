@@ -315,7 +315,11 @@
     function checkAuthStatus() {
       const isAuthenticated = sessionStorage.getItem('adminAuthenticated');
       if (isAuthenticated === 'true') {
+<<<<<<< HEAD
         window.location.href = 'admin.html';
+=======
+        window.location.href = 'creator-hub-pro.html';
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
       }
     }
 
@@ -379,7 +383,11 @@
       if (pin === storedPin) {
         sessionStorage.setItem('adminAuthenticated', 'true');
         showAlert('Authentication successful!', 'success');
+<<<<<<< HEAD
         setTimeout(() => window.location.href = 'admin.html', 1000);
+=======
+        setTimeout(() => window.location.href = 'creator-hub-pro.html', 1000);
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
       } else {
         showAlert('Invalid PIN. Please try again.', 'error');
         clearPINInputs('pin');
@@ -398,7 +406,11 @@
       if (password === storedPassword) {
         sessionStorage.setItem('adminAuthenticated', 'true');
         showAlert('Authentication successful!', 'success');
+<<<<<<< HEAD
         setTimeout(() => window.location.href = 'admin.html', 1000);
+=======
+        setTimeout(() => window.location.href = 'creator-hub-pro.html', 1000);
+>>>>>>> 28d5269 (Update: Sync project files and documentation)
       } else {
         showAlert('Invalid password. Please try again.', 'error');
       }
