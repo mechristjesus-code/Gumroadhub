@@ -13,9 +13,25 @@ class CreateProductScreen extends StatefulWidget {
 
 class _CreateProductScreenState extends State<CreateProductScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _priceController = TextEditingController();
-  final _descController = TextEditingController();
+  late TextEditingController _nameController;
+  late TextEditingController _priceController;
+  late TextEditingController _descController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _priceController = TextEditingController();
+    _descController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _priceController.dispose();
+    _descController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
