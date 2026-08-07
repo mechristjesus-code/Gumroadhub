@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Creator Hub">
+  <meta name="theme-color" content="#ff90e8">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23ff90e8' width='192' height='192'/><text x='50%' y='50%' font-size='80' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>🛍️</text></svg>">
+  <title>Creator Hub</title>
+  <style>
+    :root {
+      --primary: #ff90e8;
+      --secondary: #4a90e2;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --bg: #f4f4f0;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --border: #000000;
+      --light-gray: #ecf0f1;
+      --safe-top: max(env(safe-area-inset-top), 10px);
+      --safe-bottom: max(env(safe-area-inset-bottom), 10px);
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+    }
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .header p {
+      margin: 5px 0 0 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 15px;
+      padding-bottom: 80px;
+    }
+    .quick-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-mini {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+    .stat-mini .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .stat-mini .label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      active: 0.95;
+    }
+    .card:active {
+      transform: scale(0.98);
+    }
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .card p {
+      margin: 0;
+      font-size: 13px;
+      color: #666;
+    }
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 2px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      padding-bottom: var(--safe-bottom);
+      z-index: 1000;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 5px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 12px;
+      font-weight: bold;
+      color: #666;
+      transition: all 0.2s;
+      text-decoration: none;
+      min-height: 60px;
+    }
+    .nav-item:active {
+      background: var(--light-gray);
+    }
+    .nav-item.active {
+      color: var(--primary);
+    }
+    .nav-icon {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .install-banner {
+      background: var(--secondary);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    .install-banner.show {
+      display: block;
+    }
+    .install-banner button {
+      background: white;
+      color: var(--secondary);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a1a;
+        --card-bg: #2d2d2d;
+        --text: #ffffff;
+        --border: #444;
+        --light-gray: #3a3a3a;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🛍️ Creator Hub</h1>
+    <p>Your Gumroad Companion</p>
+  </div>
+
+  <div class="content">
+    <div id="installBanner" class="install-banner">
+      <strong>Install App</strong>
+      <p>Add Creator Hub to your home screen for quick access</p>
+      <button onclick="installApp()">Install</button>
+    </div>
+
+    <div class="quick-stats">
+      <div class="stat-mini">
+        <div class="value" id="statProducts">0</div>
+        <div class="label">Products</div>
+      </div>
+      <div class="stat-mini">
+        <div class="value" id="statSales">0</div>
+        <div class="label">Sales</div>
+      </div>
+    </div>
+
+    <div class="card" onclick="navigateTo('admin.html')">
+      <div class="card-icon">📊</div>
+      <h3>Dashboard</h3>
+      <p>View your store analytics and metrics</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('ai-assistant.html')">
+      <div class="card-icon">🤖</div>
+      <h3>AI Assistant</h3>
+      <p>Generate product descriptions & content</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('ai-assistant-pro.html')">
+      <div class="card-icon">⭐</div>
+      <h3>AI Pro Tools</h3>
+      <p>Reviews, support, & marketing tools</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('dashboard-enhanced.html')">
+      <div class="card-icon">📈</div>
+      <h3>Analytics</h3>
+      <p>Detailed sales charts & trends</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('multi-shop.html')">
+      <div class="card-icon">🏪</div>
+      <h3>Multi-Shop</h3>
+      <p>Manage multiple storefronts</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('auth.html')">
+      <div class="card-icon">🔐</div>
+      <h3>Security</h3>
+      <p>Set up PIN or password protection</p>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a class="nav-item active" onclick="setActive(this); navigateTo('mobile-home.html')">
+      <div class="nav-icon">🏠</div>
+      <div>Home</div>
+    </a>
+    <a class="nav-item" onclick="setActive(this); navigateTo('admin.html')">
+      <div class="nav-icon">📊</div>
+      <div>Admin</div>
+    </a>
+    <a class="nav-item" onclick="setActive(this); navigateTo('ai-assistant.html')">
+      <div class="nav-icon">🤖</div>
+      <div>AI</div>
+    </a>
+    <a class="nav-item" onclick="setActive(this); navigateTo('multi-shop.html')">
+      <div class="nav-icon">🏪</div>
+      <div>Shops</div>
+    </a>
+    <a class="nav-item" onclick="setActive(this); toggleSettings()">
+      <div class="nav-icon">⚙️</div>
+      <div>Settings</div>
+    </a>
+  </div>
+
+  <script>
+    let deferredPrompt;
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('Service Worker registered');
+      }).catch(err => {
+        console.log('Service Worker registration failed:', err);
+      });
+    }
+
+    // PWA install prompt
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBanner').classList.add('show');
+    });
+
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(choiceResult => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('App installed');
+            document.getElementById('installBanner').classList.remove('show');
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
+
+    // Load stats
+    function loadStats() {
+      const products = JSON.parse(localStorage.getItem('products') || '[]');
+      const sales = JSON.parse(localStorage.getItem('sales') || '[]');
+      document.getElementById('statProducts').textContent = products.length;
+      document.getElementById('statSales').textContent = sales.length;
+    }
+
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+
+    function setActive(element) {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      element.classList.add('active');
+    }
+
+    function toggleSettings() {
+      const choice = confirm('Settings:\n1. Dark Mode (Tap OK)\n2. Clear Data (Tap Cancel)');
+      if (choice) {
+        document.documentElement.style.colorScheme = 
+          document.documentElement.style.colorScheme === 'dark' ? 'light' : 'dark';
+      } else {
+        if (confirm('Clear all local data? This cannot be undone.')) {
+          localStorage.clear();
+          sessionStorage.clear();
+          alert('Data cleared. Reloading...');
+          location.reload();
+        }
+      }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', loadStats);
+    
+    // Prevent zoom on double-tap
+    document.addEventListener('touchmove', e => {
+      if (e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  </script>
+</body>
+</html>

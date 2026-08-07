@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#ff90e8">
+  <link rel="manifest" href="manifest.json">
+  <title>Creator Hub - Offline Admin</title>
+  <style>
+    :root {
+      --primary: #ff90e8;
+      --secondary: #4a90e2;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --bg: #f4f4f0;
+      --card-bg: #ffffff;
+      --text: #000000;
+      --border: #000000;
+      --light-gray: #ecf0f1;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 100%;
+      max-width: 250px;
+      background: var(--card-bg);
+      border-right: 2px solid var(--border);
+      padding: 15px;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      margin: 0 0 15px 0;
+      font-size: 16px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      padding: 10px;
+      margin: 8px 0;
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-item:active {
+      background: var(--primary);
+      color: white;
+    }
+    .nav-item.active {
+      background: var(--primary);
+      color: white;
+    }
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .status-badge.online {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status-badge.offline {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    button {
+      background: var(--primary);
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    button:active {
+      opacity: 0.8;
+    }
+    button.danger {
+      background: var(--danger);
+      color: white;
+    }
+    button.success {
+      background: var(--success);
+      color: white;
+    }
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background: var(--light-gray);
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background: var(--light-gray);
+    }
+    .alert {
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border-left: 4px solid;
+    }
+    .alert.success {
+      background: #d4edda;
+      border-color: var(--success);
+      color: #155724;
+    }
+    .alert.error {
+      background: #f8d7da;
+      border-color: var(--danger);
+      color: #721c24;
+    }
+    .alert.info {
+      background: #d1ecf1;
+      border-color: var(--secondary);
+      color: #0c5460;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .stat-box {
+      background: var(--light-gray);
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-box .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .stat-box .label {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    @media (max-width: 768px) {
+      .admin-container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        max-width: none;
+        border-right: none;
+        border-bottom: 2px solid var(--border);
+        display: flex;
+        overflow-x: auto;
+      }
+      .sidebar h2 {
+        display: none;
+      }
+      .nav-item {
+        margin: 0 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>Admin Panel</h2>
+      <div class="nav-item active" onclick="switchSection('dashboard')">📊 Dashboard</div>
+      <div class="nav-item" onclick="switchSection('products')">📦 Products</div>
+      <div class="nav-item" onclick="switchSection('sales')">💰 Sales</div>
+      <div class="nav-item" onclick="switchSection('licenses')">🔑 Licenses</div>
+      <div class="nav-item" onclick="switchSection('backup')">💾 Backup</div>
+      <div class="nav-item" onclick="switchSection('settings')">⚙️ Settings</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1>🛍️ Creator Hub - Offline</h1>
+        <span class="status-badge offline" id="statusBadge">📡 Offline Mode</span>
+      </div>
+
+      <div id="alertContainer"></div>
+
+      <!-- Dashboard Section -->
+      <div id="dashboard" class="section active">
+        <h2>Dashboard</h2>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="value" id="totalProducts">0</div>
+            <div class="label">Products</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="totalSales">0</div>
+            <div class="label">Sales</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="totalRevenue">$0</div>
+            <div class="label">Revenue</div>
+          </div>
+          <div class="stat-box">
+            <div class="value" id="dbSize">0 KB</div>
+            <div class="label">Storage Used</div>
+          </div>
+        </div>
+        <div class="card">
+          <button onclick="refreshDashboard()" class="success">🔄 Refresh Stats</button>
+        </div>
+      </div>
+
+      <!-- Products Section -->
+      <div id="products" class="section">
+        <h2>Products</h2>
+        <div class="card">
+          <h3>Add Product</h3>
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="productName" placeholder="Name">
+          </div>
+          <div class="form-group">
+            <label>Price</label>
+            <input type="number" id="productPrice" placeholder="0.00" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="productDesc" placeholder="Description"></textarea>
+          </div>
+          <button onclick="addProduct()" class="success">Add Product</button>
+        </div>
+
+        <div class="card">
+          <h3>Your Products</h3>
+          <div class="table-container">
+            <table id="productsTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Section -->
+      <div id="sales" class="section">
+        <h2>Sales</h2>
+        <div class="card">
+          <h3>Record Sale</h3>
+          <div class="form-group">
+            <label>Product</label>
+            <select id="saleProduct"></select>
+          </div>
+          <div class="form-group">
+            <label>Amount</label>
+            <input type="number" id="saleAmount" placeholder="0.00" step="0.01">
+          </div>
+          <button onclick="recordSale()" class="success">Record Sale</button>
+        </div>
+
+        <div class="card">
+          <h3>Recent Sales</h3>
+          <div class="table-container">
+            <table id="salesTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Product</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody id="salesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Licenses Section -->
+      <div id="licenses" class="section">
+        <h2>Licenses</h2>
+        <div class="card">
+          <h3>Generate License</h3>
+          <div class="form-group">
+            <label>License Type</label>
+            <select id="licenseType">
+              <option>Basic</option>
+              <option>Pro</option>
+              <option>Enterprise</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Days Valid</label>
+            <input type="number" id="licenseDays" value="30">
+          </div>
+          <button onclick="generateLicense()" class="success">Generate</button>
+        </div>
+
+        <div class="card">
+          <h3>Active Licenses</h3>
+          <div class="table-container">
+            <table id="licensesTable">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Type</th>
+                  <th>Expires</th>
+                </tr>
+              </thead>
+              <tbody id="licensesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Backup Section -->
+      <div id="backup" class="section">
+        <h2>Backup & Sync</h2>
+        <div class="card">
+          <h3>Export Data</h3>
+          <button onclick="exportData()" class="success">📥 Export as JSON</button>
+          <button onclick="exportCSV()" class="success">📊 Export as CSV</button>
+        </div>
+
+        <div class="card">
+          <h3>Import Data</h3>
+          <div class="form-group">
+            <label>Select File</label>
+            <input type="file" id="importFile" accept=".json">
+          </div>
+          <button onclick="importData()" class="success">📤 Import</button>
+        </div>
+
+        <div class="card">
+          <h3>Sync Status</h3>
+          <div id="syncStatus">
+            <p>Pending syncs: <span id="pendingSyncs">0</span></p>
+            <button onclick="viewSyncQueue()">View Queue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Section -->
+      <div id="settings" class="section">
+        <h2>Settings</h2>
+        <div class="card">
+          <h3>Storage</h3>
+          <button onclick="clearDatabase()" class="danger">🗑️ Clear All Data</button>
+          <button onclick="optimizeDatabase()" class="success">⚡ Optimize Storage</button>
+        </div>
+
+        <div class="card">
+          <h3>About</h3>
+          <p>Creator Hub - Fully Offline Version</p>
+          <p>All data is stored locally on your device.</p>
+          <p>No internet connection required.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="db-local.js"></script>
+  <script>
+    let db = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      db = new LocalDB();
+      await db.init();
+      db.setupConnectivityMonitor();
+      
+      loadDashboard();
+      setupEventListeners();
+      updateStatusBadge();
+    });
+
+    function switchSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      document.getElementById(sectionId).classList.add('active');
+      event.target.classList.add('active');
+
+      if (sectionId === 'products') loadProducts();
+      if (sectionId === 'sales') loadSales();
+      if (sectionId === 'licenses') loadLicenses();
+    }
+
+    function setupEventListeners() {
+      db.on('online', () => updateStatusBadge());
+      db.on('offline', () => updateStatusBadge());
+    }
+
+    function updateStatusBadge() {
+      const badge = document.getElementById('statusBadge');
+      if (navigator.onLine) {
+        badge.textContent = '✓ Online';
+        badge.className = 'status-badge online';
+      } else {
+        badge.textContent = '📡 Offline';
+        badge.className = 'status-badge offline';
+      }
+    }
+
+    async function loadDashboard() {
+      const products = await db.getAll('products');
+      const sales = await db.getAll('sales');
+      const stats = await db.getStats();
+
+      const revenue = sales.reduce((sum, s) => sum + (s.amount || 0), 0);
+
+      document.getElementById('totalProducts').textContent = products.length;
+      document.getElementById('totalSales').textContent = sales.length;
+      document.getElementById('totalRevenue').textContent = '$' + revenue.toFixed(2);
+
+      let totalSize = 0;
+      Object.values(stats).forEach(s => totalSize += s.size);
+      document.getElementById('dbSize').textContent = (totalSize / 1024).toFixed(2) + ' KB';
+    }
+
+    async function addProduct() {
+      const name = document.getElementById('productName').value;
+      const price = parseFloat(document.getElementById('productPrice').value);
+      const desc = document.getElementById('productDesc').value;
+
+      if (!name || !price) {
+        showAlert('Please fill all fields', 'error');
+        return;
+      }
+
+      const product = {
+        id: 'prod_' + Date.now(),
+        name, price, description: desc,
+        createdAt: new Date().toISOString()
+      };
+
+      await db.put('products', product);
+      document.getElementById('productName').value = '';
+      document.getElementById('productPrice').value = '';
+      document.getElementById('productDesc').value = '';
+      loadProducts();
+      showAlert('Product added!', 'success');
+    }
+
+    async function loadProducts() {
+      const products = await db.getAll('products');
+      const tbody = document.getElementById('productsBody');
+      tbody.innerHTML = products.map(p => `
+        <tr>
+          <td>${p.name}</td>
+          <td>$${p.price.toFixed(2)}</td>
+          <td><button onclick="deleteProduct('${p.id}')" class="danger">Delete</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function deleteProduct(id) {
+      if (confirm('Delete this product?')) {
+        await db.delete('products', id);
+        loadProducts();
+        showAlert('Product deleted', 'success');
+      }
+    }
+
+    async function recordSale() {
+      const productId = document.getElementById('saleProduct').value;
+      const amount = parseFloat(document.getElementById('saleAmount').value);
+
+      if (!productId || !amount) {
+        showAlert('Please select product and amount', 'error');
+        return;
+      }
+
+      const sale = {
+        id: 'sale_' + Date.now(),
+        productId, amount,
+        date: new Date().toISOString()
+      };
+
+      await db.put('sales', sale);
+      document.getElementById('saleAmount').value = '';
+      loadSales();
+      showAlert('Sale recorded!', 'success');
+    }
+
+    async function loadSales() {
+      const sales = await db.getAll('sales');
+      const products = await db.getAll('products');
+      const productMap = Object.fromEntries(products.map(p => [p.id, p.name]));
+
+      const select = document.getElementById('saleProduct');
+      select.innerHTML = products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+
+      const tbody = document.getElementById('salesBody');
+      tbody.innerHTML = sales.slice(-10).reverse().map(s => `
+        <tr>
+          <td>${new Date(s.date).toLocaleDateString()}</td>
+          <td>${productMap[s.productId] || 'Unknown'}</td>
+          <td>$${s.amount.toFixed(2)}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function generateLicense() {
+      const type = document.getElementById('licenseType').value;
+      const days = parseInt(document.getElementById('licenseDays').value);
+
+      const key = 'LIC_' + type.toUpperCase() + '_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + days);
+
+      const license = {
+        key, type,
+        createdAt: new Date().toISOString(),
+        expiresAt: expiresAt.toISOString()
+      };
+
+      await db.put('licenses', license);
+      loadLicenses();
+      showAlert('License generated: ' + key, 'success');
+    }
+
+    async function loadLicenses() {
+      const licenses = await db.getAll('licenses');
+      const tbody = document.getElementById('licensesBody');
+      tbody.innerHTML = licenses.map(l => `
+        <tr>
+          <td>${l.key}</td>
+          <td>${l.type}</td>
+          <td>${new Date(l.expiresAt).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function exportData() {
+      const data = await db.exportData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      downloadFile(blob, 'backup_' + Date.now() + '.json');
+      showAlert('Data exported!', 'success');
+    }
+
+    async function exportCSV() {
+      const products = await db.getAll('products');
+      let csv = 'Name,Price,Description\n';
+      products.forEach(p => {
+        csv += `"${p.name}","${p.price}","${p.description}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      downloadFile(blob, 'products_' + Date.now() + '.csv');
+      showAlert('CSV exported!', 'success');
+    }
+
+    function downloadFile(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function importData() {
+      const file = document.getElementById('importFile').files[0];
+      if (!file) {
+        showAlert('Select a file', 'error');
+        return;
+      }
+
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await db.importData(data);
+      loadDashboard();
+      showAlert('Data imported!', 'success');
+    }
+
+    async function clearDatabase() {
+      if (confirm('Delete ALL data? This cannot be undone!')) {
+        await db.clear('products');
+        await db.clear('sales');
+        await db.clear('licenses');
+        loadDashboard();
+        showAlert('Database cleared', 'success');
+      }
+    }
+
+    async function optimizeDatabase() {
+      await db.clearSyncQueue();
+      showAlert('Database optimized', 'success');
+    }
+
+    async function refreshDashboard() {
+      await loadDashboard();
+      showAlert('Dashboard refreshed', 'success');
+    }
+
+    function viewSyncQueue() {
+      alert('Sync queue feature coming soon');
+    }
+
+    function showAlert(message, type) {
+      const alert = document.createElement('div');
+      alert.className = `alert ${type}`;
+      alert.textContent = message;
+      document.getElementById('alertContainer').appendChild(alert);
+      setTimeout(() => alert.remove(), 3000);
+    }
+  </script>
+</body>
+</html>
