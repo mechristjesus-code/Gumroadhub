@@ -1,0 +1,22 @@
+# Flutter/Dart artifacts
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+*.lock
+
+# IDE files
+.vscode/
+.idea/
+
+# Android/iOS specific
+android/app/build/
+android/app/debug/
+android/app/release/
+ios/
+
+# Sensitive data
+.env
+.secure_storage/
+*.pem
